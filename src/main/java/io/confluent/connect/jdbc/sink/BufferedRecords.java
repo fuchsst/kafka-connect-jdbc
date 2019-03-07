@@ -74,7 +74,7 @@ public class BufferedRecords {
 
     if (currentSchemaPair == null) {
       currentSchemaPair = schemaPair;
-      // re-initialize everything that depends on the record valueSchema
+      // re-initialize everything that depends on the record schema
       fieldsMetadata = FieldsMetadata.extract(
           tableId.tableName(),
           config.pkMode,
@@ -120,7 +120,7 @@ public class BufferedRecords {
     } else {
       // Each batch needs to have the same SchemaPair, so get the buffered records out, reset
       // state and re-attempt the add
-      log.debug("Flushing buffered records after due to unequal valueSchema pairs: "
+      log.debug("Flushing buffered records after due to unequal schema pairs: "
           + "current schemas: {}, next schemas: {}", currentSchemaPair, schemaPair);
       flushed = flush();
       currentSchemaPair = null;

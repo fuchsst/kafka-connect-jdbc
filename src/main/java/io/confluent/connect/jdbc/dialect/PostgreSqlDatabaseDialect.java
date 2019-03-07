@@ -117,7 +117,7 @@ public class PostgreSqlDatabaseDialect extends GenericDatabaseDialect {
         return fieldName;
       }
       case Types.OTHER: {
-        // Some of these types will have fixed size, but we drop this from the valueSchema conversion
+        // Some of these types will have fixed size, but we drop this from the schema conversion
         // since only fixed byte arrays can have a fixed size
         if (isJsonType(columnDefn)) {
           builder.field(

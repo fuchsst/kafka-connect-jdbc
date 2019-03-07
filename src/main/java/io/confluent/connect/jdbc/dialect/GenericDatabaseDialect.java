@@ -543,7 +543,7 @@ public class GenericDatabaseDialect implements DatabaseDialect {
       String columnPattern
   ) throws SQLException {
     log.debug(
-        "Querying {} dialect column metadata for catalog:{} valueSchema:{} table:{}",
+        "Querying {} dialect column metadata for catalog:{} schema:{} table:{}",
         this,
         catalogPattern,
         schemaPattern,
@@ -860,7 +860,7 @@ public class GenericDatabaseDialect implements DatabaseDialect {
    * specified definition. This is intended to be easily overridden by subclasses.
    *
    * @param columnDefn the definition of the column; may not be null
-   * @param builder    the valueSchema builder; may not be null
+   * @param builder    the schema builder; may not be null
    * @param fieldName  the name of the field and {@link #fieldNameFor(ColumnDefinition) computed}
    *                   from the column definition; may not be null
    * @param sqlType    the JDBC {@link java.sql.Types type} as obtained from the column definition
@@ -1005,7 +1005,7 @@ public class GenericDatabaseDialect implements DatabaseDialect {
       case Types.NCLOB:
       case Types.DATALINK:
       case Types.SQLXML: {
-        // Some of these types will have fixed size, but we drop this from the valueSchema conversion
+        // Some of these types will have fixed size, but we drop this from the schema conversion
         // since only fixed byte arrays can have a fixed size
         builder.field(fieldName, optional ? Schema.OPTIONAL_STRING_SCHEMA : Schema.STRING_SCHEMA);
         break;
@@ -1316,7 +1316,7 @@ public class GenericDatabaseDialect implements DatabaseDialect {
       case Types.ROWID:
       default: {
         // These are not currently supported, but we don't want to log something for every single
-        // record we translate. There will already be errors logged for the valueSchema translation
+        // record we translate. There will already be errors logged for the schema translation
         break;
       }
     }

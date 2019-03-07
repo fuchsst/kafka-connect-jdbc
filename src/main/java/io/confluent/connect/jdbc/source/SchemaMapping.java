@@ -63,7 +63,7 @@ public final class SchemaMapping {
   ) throws SQLException {
     Map<ColumnId, ColumnDefinition> colDefns = dialect.describeColumns(metadata);
     Map<String, ColumnConverter> colConvertersByFieldName = new LinkedHashMap<>();
-    SchemaBuilder keyBuilder = SchemaBuilder.struct().name(schemaName+"-key");
+    SchemaBuilder keyBuilder = SchemaBuilder.struct().name(schemaName+"_key");
     SchemaBuilder valueBuilder = SchemaBuilder.struct().name(schemaName);
     int columnNumber = 0;
     for (ColumnDefinition colDefn : colDefns.values()) {

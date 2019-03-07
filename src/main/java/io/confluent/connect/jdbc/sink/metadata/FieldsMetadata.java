@@ -79,7 +79,7 @@ public class FieldsMetadata {
       final Schema valueSchema
   ) {
     if (valueSchema != null && valueSchema.type() != Schema.Type.STRUCT) {
-      throw new ConnectException("Value valueSchema must be of type Struct");
+      throw new ConnectException("Value schema must be of type Struct");
     }
 
     final Map<String, SinkRecordField> allFields = new HashMap<>();
@@ -179,7 +179,7 @@ public class FieldsMetadata {
     {
       if (keySchema == null) {
         throw new ConnectException(String.format(
-            "PK mode for table '%s' is %s, but record key valueSchema is missing",
+            "PK mode for table '%s' is %s, but record key schema is missing",
             tableName,
             JdbcSinkConfig.PrimaryKeyMode.RECORD_KEY
         ));
@@ -188,7 +188,7 @@ public class FieldsMetadata {
       if (keySchemaType.isPrimitive()) {
         if (configuredPkFields.size() != 1) {
           throw new ConnectException(String.format(
-              "Need exactly one PK column defined since the key valueSchema for records is a "
+              "Need exactly one PK column defined since the key schema for records is a "
               + "primitive type, defined columns are: %s",
               configuredPkFields
           ));
@@ -207,7 +207,7 @@ public class FieldsMetadata {
             if (keyField == null) {
               throw new ConnectException(String.format(
                   "PK mode for table '%s' is %s with configured PK fields %s, but record key "
-                  + "valueSchema does not contain field: %s",
+                  + "schema does not contain field: %s",
                   tableName, JdbcSinkConfig.PrimaryKeyMode.RECORD_KEY, configuredPkFields, fieldName
               ));
             }
@@ -220,7 +220,7 @@ public class FieldsMetadata {
         }
       } else {
         throw new ConnectException(
-            "Key valueSchema must be primitive type or Struct, but is of type: " + keySchemaType
+            "Key schema must be primitive type or Struct, but is of type: " + keySchemaType
         );
       }
     }
@@ -235,7 +235,7 @@ public class FieldsMetadata {
   ) {
     if (valueSchema == null) {
       throw new ConnectException(String.format(
-          "PK mode for table '%s' is %s, but record value valueSchema is missing",
+          "PK mode for table '%s' is %s, but record value schema is missing",
           tableName,
           JdbcSinkConfig.PrimaryKeyMode.RECORD_VALUE)
       );
@@ -249,7 +249,7 @@ public class FieldsMetadata {
         if (valueSchema.field(fieldName) == null) {
           throw new ConnectException(String.format(
               "PK mode for table '%s' is %s with configured PK fields %s, but record value "
-              + "valueSchema does not contain field: %s",
+              + "schema does not contain field: %s",
               tableName, JdbcSinkConfig.PrimaryKeyMode.RECORD_VALUE, configuredPkFields, fieldName
           ));
         }

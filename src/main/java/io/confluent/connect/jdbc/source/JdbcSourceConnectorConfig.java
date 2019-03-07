@@ -194,12 +194,12 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
   public static final String TABLE_BLACKLIST_DEFAULT = "";
   private static final String TABLE_BLACKLIST_DISPLAY = "Table Blacklist";
 
-  public static final String SCHEMA_PATTERN_CONFIG = "valueSchema.pattern";
+  public static final String SCHEMA_PATTERN_CONFIG = "schema.pattern";
   private static final String SCHEMA_PATTERN_DOC =
       "Schema pattern to fetch table metadata from the database:\n"
-      + "  * \"\" retrieves those without a valueSchema,"
-      + "  * null (default) means that the valueSchema name should not be used to narrow the search,"
-      + " so that all table metadata would be fetched, regardless of their valueSchema.";
+      + "  * \"\" retrieves those without a schema,"
+      + "  * null (default) means that the schema name should not be used to narrow the search,"
+      + " so that all table metadata would be fetched, regardless of their schema.";
   private static final String SCHEMA_PATTERN_DISPLAY = "Schema pattern";
   public static final String SCHEMA_PATTERN_DEFAULT = null;
 
@@ -469,16 +469,16 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
         INCREMENTING_COLUMN_NAME_DISPLAY,
         MODE_DEPENDENTS_RECOMMENDER
     ).define(
-            TIMESTAMP_COLUMN_NAME_CONFIG,
-            Type.LIST,
-            TIMESTAMP_COLUMN_NAME_DEFAULT,
-            Importance.MEDIUM,
-            TIMESTAMP_COLUMN_NAME_DOC,
-            MODE_GROUP,
-            ++orderInGroup,
-            Width.MEDIUM,
-            TIMESTAMP_COLUMN_NAME_DISPLAY,
-            MODE_DEPENDENTS_RECOMMENDER
+        TIMESTAMP_COLUMN_NAME_CONFIG,
+        Type.LIST,
+        TIMESTAMP_COLUMN_NAME_DEFAULT,
+        Importance.MEDIUM,
+        TIMESTAMP_COLUMN_NAME_DOC,
+        MODE_GROUP,
+        ++orderInGroup,
+        Width.MEDIUM,
+        TIMESTAMP_COLUMN_NAME_DISPLAY,
+        MODE_DEPENDENTS_RECOMMENDER
     ).define(
         VALIDATE_NON_NULL_CONFIG,
         Type.BOOLEAN,
@@ -586,15 +586,15 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
         Width.MEDIUM,
         DB_TIMEZONE_CONFIG_DISPLAY
     ).define(
-            KEY_COLUMN_NAME_CONFIG,
-            Type.LIST,
-            KEY_COLUMN_NAME_DEFAULT,
-            Importance.LOW,
-            KEY_COLUMN_NAME_DOC,
-            CONNECTOR_GROUP,
-            ++orderInGroup,
-            Width.MEDIUM,
-            KEY_COLUMN_NAME_DISPLAY
+        KEY_COLUMN_NAME_CONFIG,
+        Type.LIST,
+        KEY_COLUMN_NAME_DEFAULT,
+        Importance.LOW,
+        KEY_COLUMN_NAME_DOC,
+        CONNECTOR_GROUP,
+        ++orderInGroup,
+        Width.MEDIUM,
+        KEY_COLUMN_NAME_DISPLAY
     );
   }
 

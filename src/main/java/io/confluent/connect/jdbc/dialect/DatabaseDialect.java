@@ -293,7 +293,7 @@ public interface DatabaseDialect extends ConnectionProvider {
    * specified definition.
    *
    * @param column  the definition of the column; may not be null
-   * @param builder the valueSchema builder; may not be null
+   * @param builder the schema builder; may not be null
    * @return the name of the field, or null if no field was added
    */
   String addFieldToSchema(ColumnDefinition column, SchemaBuilder builder);
@@ -407,12 +407,12 @@ public interface DatabaseDialect extends ConnectionProvider {
   );
 
   /**
-   * Method that binds a value with the given valueSchema at the specified variable within a prepared
+   * Method that binds a value with the given schema at the specified variable within a prepared
    * statement.
    *
    * @param statement the prepared statement; may not be null
    * @param index     the 1-based index of the variable within the prepared statement
-   * @param schema    the valueSchema for the value; may be null only if the value is null
+   * @param schema    the schema for the value; may be null only if the value is null
    * @param value     the value to be bound to the variable; may be null
    * @throws SQLException if there is a problem binding the value into the statement
    * @see #statementBinder
