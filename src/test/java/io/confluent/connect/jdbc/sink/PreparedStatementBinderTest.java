@@ -128,7 +128,7 @@ public class PreparedStatementBinderTest {
     int index = 1;
     // key field first
     verify(statement, times(1)).setLong(index++, valueStruct.getInt64("long"));
-    // rest in order of schema def
+    // rest in order of valueSchema def
     verify(statement, times(1)).setString(index++, valueStruct.getString("firstName"));
     verify(statement, times(1)).setString(index++, valueStruct.getString("lastName"));
     verify(statement, times(1)).setInt(index++, valueStruct.getInt32("age"));
@@ -190,7 +190,7 @@ public class PreparedStatementBinderTest {
         int index = 1;
         // key field first
         verify(statement, times(1)).setLong(index++, valueStruct.getInt64("long"));
-        // rest in order of schema def
+        // rest in order of valueSchema def
         verify(statement, times(1)).setString(index++, valueStruct.getString("firstName"));
     }
 

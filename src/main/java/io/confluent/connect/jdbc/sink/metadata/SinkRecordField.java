@@ -62,7 +62,7 @@ public class SinkRecordField {
   @Override
   public String toString() {
     return "SinkRecordField{"
-           + "schema=" + schema
+           + "valueSchema=" + schema
            + ", name='" + name + '\''
            + ", isPrimaryKey=" + isPrimaryKey
            + '}';

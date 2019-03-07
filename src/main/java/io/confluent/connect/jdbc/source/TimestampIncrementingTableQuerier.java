@@ -16,6 +16,8 @@
 package io.confluent.connect.jdbc.source;
 
 import java.util.TimeZone;
+
+import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -74,11 +76,12 @@ public class TimestampIncrementingTableQuerier extends TableQuerier implements C
 
   public TimestampIncrementingTableQuerier(DatabaseDialect dialect, QueryMode mode, String name,
                                            String topicPrefix,
+                                           List<String> keyFieldNames,
                                            List<String> timestampColumnNames,
                                            String incrementingColumnName,
                                            Map<String, Object> offsetMap, Long timestampDelay,
                                            TimeZone timeZone) {
-    super(dialect, mode, name, topicPrefix);
+    super(dialect, mode, name, topicPrefix, keyFieldNames);
     this.incrementingColumnName = incrementingColumnName;
     this.timestampColumnNames = timestampColumnNames != null
                                 ? timestampColumnNames : Collections.<String>emptyList();
@@ -178,19 +181,13 @@ public class TimestampIncrementingTableQuerier extends TableQuerier implements C
   }
 
   @Override
-  public SourceRecord extractRecord() throws SQLException {
-    Struct record = new Struct(schemaMapping.schema());
-    for (FieldSetter setter : schemaMapping.fieldSetters()) {
-      try {
-        setter.setField(record, resultSet);
-      } catch (IOException e) {
-        log.warn("Ignoring record because processing failed:", e);
-      } catch (SQLException e) {
-        log.warn("Ignoring record due to SQL error:", e);
-      }
-    }
-    offset = criteria.extractValues(schemaMapping.schema(), record, offset);
-    return new SourceRecord(partition, offset.toMap(), topic, record.schema(), record);
+  public SourceRecord extractRecord() {
+    Struct recordKey = getKeyStruct();
+    Schema recordKeySchema = recordKey != null ? recordKey.schema() : null;
+    Struct recordValue = getValueStruct();
+    Schema recordValueSchema = recordValue.schema();
+    offset = criteria.extractValues(recordValueSchema, recordValue, offset);
+    return new SourceRecord(partition, offset.toMap(), topic, recordKeySchema, recordKey, recordValueSchema, recordValue);
   }
 
   @Override

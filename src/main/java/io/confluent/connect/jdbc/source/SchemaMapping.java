@@ -49,59 +49,74 @@ public final class SchemaMapping {
   /**
    * Convert the result set into a {@link Schema}.
    *
-   * @param schemaName the name of the schema; may be null
+   * @param schemaName the name of the valueSchema; may be null
    * @param metadata   the result set metadata; never null
    * @param dialect    the dialect for the source database; never null
-   * @return the schema mapping; never null
+   * @return the valueSchema mapping; never null
    * @throws SQLException if there is a problem accessing the result set metadata
    */
   public static SchemaMapping create(
       String schemaName,
       ResultSetMetaData metadata,
-      DatabaseDialect dialect
+      DatabaseDialect dialect,
+      List<String> keyFields
   ) throws SQLException {
     Map<ColumnId, ColumnDefinition> colDefns = dialect.describeColumns(metadata);
     Map<String, ColumnConverter> colConvertersByFieldName = new LinkedHashMap<>();
-    SchemaBuilder builder = SchemaBuilder.struct().name(schemaName);
+    SchemaBuilder keyBuilder = SchemaBuilder.struct().name(schemaName+"-key");
+    SchemaBuilder valueBuilder = SchemaBuilder.struct().name(schemaName);
     int columnNumber = 0;
     for (ColumnDefinition colDefn : colDefns.values()) {
       ++columnNumber;
-      String fieldName = dialect.addFieldToSchema(colDefn, builder);
+      String fieldName = dialect.addFieldToSchema(colDefn, valueBuilder);
       if (fieldName == null) {
         continue;
       }
-      Field field = builder.field(fieldName);
+      Field field = valueBuilder.field(fieldName);
       ColumnMapping mapping = new ColumnMapping(colDefn, columnNumber, field);
       ColumnConverter converter = dialect.createColumnConverter(mapping);
       colConvertersByFieldName.put(fieldName, converter);
+
+      if (keyFields != null && keyFields.contains(fieldName)) {
+        keyBuilder.field(fieldName);
+      }
+
     }
-    Schema schema = builder.build();
-    return new SchemaMapping(schema, colConvertersByFieldName);
+    Schema keySchema = keyFields != null ? keyBuilder.build() : null;
+    Schema valueSchema = valueBuilder.build();
+    return new SchemaMapping(keySchema, valueSchema, colConvertersByFieldName);
   }
 
-  private final Schema schema;
+  private final Schema keySchema;
+  private final Schema valueSchema;
   private final List<FieldSetter> fieldSetters;
 
   private SchemaMapping(
-      Schema schema,
+      Schema keySchema,
+      Schema valueSchema,
       Map<String, ColumnConverter> convertersByFieldName
   ) {
-    assert schema != null;
+    assert valueSchema != null;
     assert convertersByFieldName != null;
     assert !convertersByFieldName.isEmpty();
-    this.schema = schema;
+    this.keySchema = keySchema;
+    this.valueSchema = valueSchema;
     List<FieldSetter> fieldSetters = new ArrayList<>(convertersByFieldName.size());
     for (Map.Entry<String, ColumnConverter> entry : convertersByFieldName.entrySet()) {
       ColumnConverter converter = entry.getValue();
-      Field field = schema.field(entry.getKey());
+      Field field = valueSchema.field(entry.getKey());
       assert field != null;
       fieldSetters.add(new FieldSetter(converter, field));
     }
     this.fieldSetters = Collections.unmodifiableList(fieldSetters);
   }
 
-  public Schema schema() {
-    return schema;
+  public Schema keySchema() {
+    return keySchema;
+  }
+
+  public Schema valueSchema() {
+    return valueSchema;
   }
 
   /**
@@ -117,7 +132,7 @@ public final class SchemaMapping {
 
   @Override
   public String toString() {
-    return "Mapping for " + schema.name();
+    return "Mapping for " + valueSchema.name();
   }
 
   public static final class FieldSetter {

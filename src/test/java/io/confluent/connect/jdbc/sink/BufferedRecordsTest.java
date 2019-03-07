@@ -89,7 +89,7 @@ public class BufferedRecordsTest {
         .put("age", 4);
     final SinkRecord recordB = new SinkRecord("dummy", 1, null, null, schemaB, valueB, 1);
 
-    // test records are batched correctly based on schema equality as records are added
+    // test records are batched correctly based on valueSchema equality as records are added
     //   (schemaA,schemaA,schemaA,schemaB,schemaA) -> ([schemaA,schemaA,schemaA],[schemaB],[schemaA])
 
     assertEquals(Collections.emptyList(), buffer.add(recordA));

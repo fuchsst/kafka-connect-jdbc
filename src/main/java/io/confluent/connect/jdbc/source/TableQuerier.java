@@ -15,14 +15,14 @@
 
 package io.confluent.connect.jdbc.source;
 
+import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 import io.confluent.connect.jdbc.dialect.DatabaseDialect;
 import io.confluent.connect.jdbc.util.TableId;
@@ -43,6 +43,7 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
   protected final DatabaseDialect dialect;
   protected final QueryMode mode;
   protected final String query;
+  protected final List<String> keyFieldNames;
   protected final String topicPrefix;
   protected final TableId tableId;
 
@@ -58,13 +59,15 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
       DatabaseDialect dialect,
       QueryMode mode,
       String nameOrQuery,
-      String topicPrefix
+      String topicPrefix,
+      List<String> keyFieldNames
   ) {
     this.dialect = dialect;
     this.mode = mode;
     this.tableId = mode.equals(QueryMode.TABLE) ? dialect.parseTableIdentifier(nameOrQuery) : null;
     this.query = mode.equals(QueryMode.QUERY) ? nameOrQuery : null;
     this.topicPrefix = topicPrefix;
+    this.keyFieldNames=keyFieldNames;
     this.lastUpdate = 0;
   }
 
@@ -91,7 +94,7 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
       stmt = getOrCreatePreparedStatement(db);
       resultSet = executeQuery();
       String schemaName = tableId != null ? tableId.tableName() : null; // backwards compatible
-      schemaMapping = SchemaMapping.create(schemaName, resultSet.getMetaData(), dialect);
+      schemaMapping = SchemaMapping.create(schemaName, resultSet.getMetaData(), dialect, keyFieldNames);
     }
   }
 
@@ -102,6 +105,40 @@ abstract class TableQuerier implements Comparable<TableQuerier> {
   }
 
   public abstract SourceRecord extractRecord() throws SQLException;
+
+  protected org.apache.kafka.connect.data.Struct getKeyStruct() {
+    if (schemaMapping.keySchema() != null) {
+      org.apache.kafka.connect.data.Struct recordKey = new org.apache.kafka.connect.data.Struct(schemaMapping.keySchema());
+      for (SchemaMapping.FieldSetter setter : schemaMapping.fieldSetters()) {
+        if (schemaMapping.keySchema().field(setter.field().name()) != null) {
+          try {
+            setter.setField(recordKey, resultSet);
+          } catch (IOException e) {
+            log.warn("Ignoring record because processing failed:", e);
+          } catch (SQLException e) {
+            log.warn("Ignoring record due to SQL error:", e);
+          }
+        }
+      }
+      return recordKey;
+    } else {
+      return null;
+    }
+  }
+
+  protected org.apache.kafka.connect.data.Struct getValueStruct() {
+    org.apache.kafka.connect.data.Struct recordValue = new Struct(schemaMapping.valueSchema());
+    for (SchemaMapping.FieldSetter setter : schemaMapping.fieldSetters()) {
+      try {
+        setter.setField(recordValue, resultSet);
+      } catch (IOException e) {
+        log.warn("Ignoring record because processing failed:", e);
+      } catch (SQLException e) {
+        log.warn("Ignoring record due to SQL error:", e);
+      }
+    }
+    return recordValue;
+  }
 
   public void reset(long now) {
     closeResultSetQuietly();

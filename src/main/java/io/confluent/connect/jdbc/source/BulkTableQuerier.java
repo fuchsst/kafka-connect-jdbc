@@ -15,6 +15,7 @@
 
 package io.confluent.connect.jdbc.source;
 
+import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -26,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import io.confluent.connect.jdbc.dialect.DatabaseDialect;
@@ -41,9 +43,10 @@ public class BulkTableQuerier extends TableQuerier {
       DatabaseDialect dialect,
       QueryMode mode,
       String name,
-      String topicPrefix
+      String topicPrefix,
+      List<String> keyFieldNames
   ) {
-    super(dialect, mode, name, topicPrefix);
+    super(dialect, mode, name, topicPrefix, keyFieldNames);
   }
 
   @Override
@@ -73,16 +76,11 @@ public class BulkTableQuerier extends TableQuerier {
 
   @Override
   public SourceRecord extractRecord() throws SQLException {
-    Struct record = new Struct(schemaMapping.schema());
-    for (FieldSetter setter : schemaMapping.fieldSetters()) {
-      try {
-        setter.setField(record, resultSet);
-      } catch (IOException e) {
-        log.warn("Ignoring record because processing failed:", e);
-      } catch (SQLException e) {
-        log.warn("Ignoring record due to SQL error:", e);
-      }
-    }
+    Struct recordKey = getKeyStruct();
+    Schema recordKeySchema = recordKey != null ? recordKey.schema() : null;
+    Struct recordValue = getValueStruct();
+    Schema recordValueSchema = recordValue.schema();
+
     // TODO: key from primary key? partition?
     final String topic;
     final Map<String, String> partition;
@@ -101,7 +99,7 @@ public class BulkTableQuerier extends TableQuerier {
       default:
         throw new ConnectException("Unexpected query mode: " + mode);
     }
-    return new SourceRecord(partition, null, topic, record.schema(), record);
+    return new SourceRecord(partition, null, topic, recordKeySchema, recordKey, recordValueSchema, recordValue);
   }
 
   @Override

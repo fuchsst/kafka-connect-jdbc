@@ -192,9 +192,11 @@ public class JdbcSourceTask extends SourceTask {
 
       String topicPrefix = config.getString(JdbcSourceTaskConfig.TOPIC_PREFIX_CONFIG);
 
+      List<String> keyFieldNames = config.getList(JdbcSourceTaskConfig.KEY_COLUMN_NAME_CONFIG);
+
       if (mode.equals(JdbcSourceTaskConfig.MODE_BULK)) {
         tableQueue.add(
-            new BulkTableQuerier(dialect, queryMode, tableOrQuery, topicPrefix)
+            new BulkTableQuerier(dialect, queryMode, tableOrQuery, topicPrefix, keyFieldNames)
         );
       } else if (mode.equals(JdbcSourceTaskConfig.MODE_INCREMENTING)) {
         tableQueue.add(
@@ -203,6 +205,7 @@ public class JdbcSourceTask extends SourceTask {
                 queryMode,
                 tableOrQuery,
                 topicPrefix,
+                keyFieldNames,
                 null,
                 incrementingColumn,
                 offset,
@@ -217,6 +220,7 @@ public class JdbcSourceTask extends SourceTask {
                 queryMode,
                 tableOrQuery,
                 topicPrefix,
+                keyFieldNames,
                 timestampColumns,
                 null,
                 offset,
@@ -231,6 +235,7 @@ public class JdbcSourceTask extends SourceTask {
                 queryMode,
                 tableOrQuery,
                 topicPrefix,
+                keyFieldNames,
                 timestampColumns,
                 incrementingColumn,
                 offset,

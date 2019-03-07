@@ -105,15 +105,15 @@ public class JdbcSinkConfig extends AbstractConfig {
   public static final String AUTO_CREATE = "auto.create";
   private static final String AUTO_CREATE_DEFAULT = "false";
   private static final String AUTO_CREATE_DOC =
-      "Whether to automatically create the destination table based on record schema if it is "
+      "Whether to automatically create the destination table based on record valueSchema if it is "
       + "found to be missing by issuing ``CREATE``.";
   private static final String AUTO_CREATE_DISPLAY = "Auto-Create";
 
   public static final String AUTO_EVOLVE = "auto.evolve";
   private static final String AUTO_EVOLVE_DEFAULT = "false";
   private static final String AUTO_EVOLVE_DOC =
-      "Whether to automatically add columns in the table schema when found to be missing relative "
-      + "to the record schema by issuing ``ALTER``.";
+      "Whether to automatically add columns in the table valueSchema when found to be missing relative "
+      + "to the record valueSchema by issuing ``ALTER``.";
   private static final String AUTO_EVOLVE_DISPLAY = "Auto-Evolve";
 
   public static final String INSERT_MODE = "insert.mode";

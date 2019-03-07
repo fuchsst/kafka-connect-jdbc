@@ -315,7 +315,7 @@ public class JdbcSourceTaskConversionTest extends JdbcSourceTaskTestBase {
   }
 
   /**
-   * Validates schema and type of returned record data. Assumes single-field values since this is
+   * Validates valueSchema and type of returned record data. Assumes single-field values since this is
    * only used for validating type information.
    */
   private void validateRecords(List<SourceRecord> records, Schema expectedFieldSchema,
@@ -326,7 +326,7 @@ public class JdbcSourceTaskConversionTest extends JdbcSourceTaskTestBase {
     assertTrue(objValue instanceof Struct);
     Struct value = (Struct) objValue;
 
-    // Validate schema
+    // Validate valueSchema
     Schema schema = value.schema();
     assertEquals(Type.STRUCT, schema.type());
     List<Field> fields = schema.fields();
