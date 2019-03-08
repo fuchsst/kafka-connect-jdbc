@@ -71,7 +71,7 @@ import org.apache.kafka.connect.sink.SinkRecord;
  *
  * <p>When the JDBC Source connector gets a new {@link ResultSet}, it creates a new {@link Schema}
  * object and uses the Dialect's {@link #addFieldToSchema(ColumnDefinition, SchemaBuilder)} method
- * to add to that valueSchema a {@link Field} for each result set column. The connector will then use
+ * to add to that schema a {@link Field} for each result set column. The connector will then use
  * that same {@link Schema} instance for <i>every</i> row in that result set.
  *
  * <p>At the same time it builds the {@link Schema} for a new result set, the connector will also
@@ -204,7 +204,7 @@ public interface DatabaseDialect extends ConnectionProvider {
 
   /**
    * Create the definition for the columns described by the database metadata using the current
-   * valueSchema and catalog patterns defined in the configuration.
+   * schema and catalog patterns defined in the configuration.
    *
    * @param connection    the database connection; may not be null
    * @param tablePattern  the pattern for matching the tables; may be null

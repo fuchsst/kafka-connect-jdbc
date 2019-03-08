@@ -173,7 +173,7 @@ public class TimestampIncrementingCriteria {
   /**
    * Extract the offset values from the row.
    *
-   * @param schema the record's valueSchema; never null
+   * @param schema the record's schema; never null
    * @param record the record's struct; never null
    * @return the timestamp for this row; may not be null
    */
@@ -205,7 +205,7 @@ public class TimestampIncrementingCriteria {
   /**
    * Extract the timestamp from the row.
    *
-   * @param schema the record's valueSchema; never null
+   * @param schema the record's schema; never null
    * @param record the record's struct; never null
    * @return the timestamp for this row; may not be null
    */
@@ -225,7 +225,7 @@ public class TimestampIncrementingCriteria {
   /**
    * Extract the incrementing column value from the row.
    *
-   * @param schema the record's valueSchema; never null
+   * @param schema the record's schema; never null
    * @param record the record's struct; never null
    * @return the incrementing ID for this row; may not be null
    */

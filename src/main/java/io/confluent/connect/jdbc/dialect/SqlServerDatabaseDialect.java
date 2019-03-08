@@ -68,7 +68,7 @@ public class SqlServerDatabaseDialect extends GenericDatabaseDialect {
   @Override
   protected boolean useCatalog() {
     // SQL Server uses JDBC's catalog to represent the database,
-    // and JDBC's valueSchema to represent the owner (e.g., "dbo")
+    // and JDBC's schema to represent the owner (e.g., "dbo")
     return true;
   }
 

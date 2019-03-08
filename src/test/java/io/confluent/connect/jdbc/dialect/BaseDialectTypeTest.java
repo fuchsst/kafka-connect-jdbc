@@ -120,7 +120,7 @@ public abstract class BaseDialectTypeTest<T extends GenericDatabaseDialect> {
     dialect = createDialect();
     schemaBuilder = SchemaBuilder.struct();
 
-    // Check the valueSchema field is created with the right type
+    // Check the schema field is created with the right type
     dialect.addFieldToSchema(columnDefn, schemaBuilder);
     Schema schema = schemaBuilder.build();
     List<Field> fields = schema.fields();

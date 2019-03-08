@@ -53,6 +53,7 @@ public final class SchemaMapping {
    * @param schemaName the name of the valueSchema; may be null
    * @param metadata   the result set metadata; never null
    * @param dialect    the dialect for the source database; never null
+   * @param keyFields  list of field names used to build the key schema; may be null
    * @return the valueSchema mapping; never null
    * @throws SQLException if there is a problem accessing the result set metadata
    */
@@ -66,7 +67,9 @@ public final class SchemaMapping {
     Map<String, ColumnConverter> colConvertersByFieldName = new LinkedHashMap<>();
     SchemaBuilder keyBuilder = SchemaBuilder.struct().name(schemaName+"_key");
     SchemaBuilder valueBuilder = SchemaBuilder.struct().name(schemaName);
-    List<String> normalizedKeyFieldNames = keyFields != null ? keyFields.stream().map(f -> f.toLowerCase()).collect(Collectors.toList()) :null;
+    List<String> normalizedKeyFieldNames = keyFields != null
+            ? keyFields.stream().map(f -> f.toLowerCase()).collect(Collectors.toList())
+            : null;
     int columnNumber = 0;
     for (ColumnDefinition colDefn : colDefns.values()) {
       ++columnNumber;
