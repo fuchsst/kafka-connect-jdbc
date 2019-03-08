@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.confluent.connect.jdbc.dialect.DatabaseDialect;
 import io.confluent.connect.jdbc.dialect.DatabaseDialect.ColumnConverter;
@@ -65,6 +66,7 @@ public final class SchemaMapping {
     Map<String, ColumnConverter> colConvertersByFieldName = new LinkedHashMap<>();
     SchemaBuilder keyBuilder = SchemaBuilder.struct().name(schemaName+"_key");
     SchemaBuilder valueBuilder = SchemaBuilder.struct().name(schemaName);
+    List<String> normalizedKeyFieldNames = keyFields != null ? keyFields.stream().map(f -> f.toLowerCase()).collect(Collectors.toList()) :null;
     int columnNumber = 0;
     for (ColumnDefinition colDefn : colDefns.values()) {
       ++columnNumber;
@@ -77,7 +79,7 @@ public final class SchemaMapping {
       ColumnConverter converter = dialect.createColumnConverter(mapping);
       colConvertersByFieldName.put(fieldName, converter);
 
-      if (keyFields != null && keyFields.contains(fieldName)) {
+      if (normalizedKeyFieldNames != null && normalizedKeyFieldNames.contains(fieldName.toLowerCase())) {
         keyBuilder.field(fieldName);
       }
 
